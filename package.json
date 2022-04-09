@@ -1,0 +1,38 @@
+{
+  "name": "find-alias",
+  "version": "0.0.0",
+  "description": "interactive aliases finder and executor",
+  "main": "index.js",
+  "scripts": {
+    "lint:check": "eslint . && prettier --check .",
+    "lint:fix": "eslint . --fix && prettier --write .",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "alias"
+  ],
+  "author": "blzsaa",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^7.0.0",
+    "prettier": "^2.6.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "fuzzy": "^0.1.3",
+    "inquirer": "^8.2.2",
+    "inquirer-autocomplete-prompt": "^2.0.0"
+  }
+}
