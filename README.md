@@ -2,13 +2,24 @@
 
 **Find-alias** is an interactive alias finder and executor.
 
-## Installation and Usage
+## Pre requirements
 
-1. clone the git repo
-2. add the following command to .bashrc: `alias find-alias='node <<absolute path to index.js>> $(alias)`
-3. reload bash with: `source ~/.bashrc`
-4. run `find-alias`
-5. write in any keyword in the quick filter and choose any alias to run
+- xdotool on PATH
+- to install xdotool
+  - on linux [see](https://github.com/jordansissel/xdotool)
+  - on Windows (for git bash) [see](https://github.com/ebranlard/xdotool-for-windows)
+
+## Installation
+
+- `git clone https://github.com/blzsaa/find-alias.git $HOME/.find-alias`
+- `cd $HOME/.find-alias; npm ci`
+- Add the following line to your \*rc (.zshrc, .bashrc, .bash_profile in OSX):  
+  `[[ -s "$HOME/.find-alias/index.js" ]] && alias fa='node $HOME/.find-alias/index.js $(alias)'`
+
+## Usage
+
+- run `fa`
+- write in any keyword in the quick filter and choose any of the aliases to run
 
 ## Contributing
 
