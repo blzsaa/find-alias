@@ -48,18 +48,19 @@ async function main() {
     .filter((a) => a && !a.includes("index.js $(alias)'"))
     .map((line) => sanitizeAlias(line))
     .map((aliasLine) => {
-      const aliasKey = aliasLine.substring(0, aliasLine.indexOf("="));
-      const aliasValue = aliasLine.substring(aliasLine.indexOf("="));
-      const y = chalk.bold(aliasKey) + chalk.gray(aliasValue);
-      return { name: y, value: aliasKey };
+      const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
+      const command = aliasLine.substring(aliasLine.indexOf("="));
+      const y = chalk.bold(shortcut) + chalk.gray(command);
+      return { name: y, value: shortcut, original: aliasLine };
     });
   lines.push(new inquirer.Separator(), {
     name: chalk.red("<<exit>>"),
     value: "<<exit>>",
+    original: "<<exit>>",
   });
 
   const fuse = new Fuse(lines, {
-    keys: ["value"],
+    keys: ["original"],
   });
 
   const answers = await inquirer.prompt([
