@@ -40,9 +40,9 @@ async function executeCommand(commandWithArgs) {
   }
 }
 
-async function main() {
-  const lines = process.argv
-    .slice(2)
+function processAliases() {
+  const aliases = process.argv
+    .slice(3)
     .join(" ")
     .split(/ ?alias /)
     .filter((a) => a && !a.includes("index.js $(alias)'"))
@@ -53,11 +53,17 @@ async function main() {
       const y = chalk.bold(shortcut) + chalk.gray(command);
       return { name: y, value: shortcut, original: aliasLine };
     });
-  lines.push(new inquirer.Separator(), {
+  aliases.push(new inquirer.Separator(), {
     name: chalk.red("<<exit>>"),
     value: "<<exit>>",
     original: "<<exit>>",
   });
+  return aliases;
+}
+
+async function main() {
+  const pageSize = Math.max(process.argv[2] - 4, 4);
+  const lines = processAliases();
 
   const fuse = new Fuse(lines, {
     keys: ["original"],
@@ -69,7 +75,7 @@ async function main() {
       name: "result",
       source: (_, input = "") =>
         input ? fuse.search(input).map((a) => a.item) : lines,
-      pageSize: 4,
+      pageSize,
       validate: (val) => (val ? true : "Type something!"),
     },
   ]);

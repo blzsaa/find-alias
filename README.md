@@ -14,7 +14,7 @@
 - `git clone https://github.com/blzsaa/find-alias.git $HOME/.find-alias`
 - `cd $HOME/.find-alias; npm ci`
 - Add the following line to your \*rc (.zshrc, .bashrc, .bash_profile in OSX):  
-  `[[ -s "$HOME/.find-alias/index.js" ]] && alias fa='node $HOME/.find-alias/index.js $(alias)'`
+  `[[ -s "$HOME/.find-alias/index.js" ]] && alias fa='node $HOME/.find-alias/index.js $(tput lines) $(alias)'`
 
 ## Usage
 
