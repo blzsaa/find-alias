@@ -21,6 +21,15 @@
 - run `fa`
 - write in any keyword in the quick filter and choose any of the aliases to run
 
+## Issues
+
+- Running `fa` in git bash returns with
+  ```
+  stdout is not a tty
+  ```
+  Start `C:\Program Files\Git\bin\bash.exe` instead of `C:\Program Files\Git\git-bash.exe`, see:
+  https://superuser.com/a/1158954/1172436
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
