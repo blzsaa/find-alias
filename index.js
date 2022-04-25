@@ -2,56 +2,31 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import inquirerPrompt from "inquirer-autocomplete-prompt";
 import Fuse from "fuse.js";
-import { spawn } from "child_process";
+import fs from "fs";
 
 inquirer.registerPrompt("autocomplete", inquirerPrompt);
 
-function sanitizeAlias(b) {
+function sanitizeAlias(a) {
+  // bash format: alias key='command' vs zsh format: key=command
+  const b = a.startsWith("alias ") ? a.substring("alias ".length) : a;
   // https://unix.stackexchange.com/a/11382
   return b.startsWith("-- ") ? b.substring(3) : b;
 }
 
-function onExit(childProcess) {
-  return new Promise((resolve, reject) => {
-    childProcess.once("exit", (code) => {
-      if (code === 0) {
-        resolve(undefined);
-      } else {
-        reject(Error(`Exit with error code: ${code}`));
-      }
-    });
-    childProcess.once("error", (err) => {
-      reject(err);
-    });
-  });
+function sanitizeCommand(a) {
+  return a.startsWith("='") ? a.slice(2, -1) : a.substring(1);
 }
 
-async function executeCommand(commandWithArgs) {
-  const args = commandWithArgs.split(/(\s+)/).flatMap((a) => ["key", a]);
-  args.push("key", "\n");
-  try {
-    const childProcess = spawn("xdotool", args, {
-      stdio: [process.stdin],
-    });
-    await onExit(childProcess);
-  } catch (e) {
-    console.log("Could not execute command:", e);
-    console.log(commandWithArgs);
-  }
-}
-
-function processAliases() {
-  const aliases = process.argv
-    .slice(3)
-    .join(" ")
-    .split(/ ?alias /)
+function processAliases(aliasesInput) {
+  const aliases = aliasesInput
+    .split("\n")
     .filter((a) => a && !a.includes("index.js $(alias)'"))
     .map((line) => sanitizeAlias(line))
     .map((aliasLine) => {
       const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
       const command = aliasLine.substring(aliasLine.indexOf("="));
       const y = chalk.bold(shortcut) + chalk.gray(command);
-      return { name: y, value: shortcut, original: aliasLine };
+      return { name: y, value: sanitizeCommand(command), original: aliasLine };
     });
   aliases.push(new inquirer.Separator(), {
     name: chalk.red("<<exit>>"),
@@ -62,8 +37,12 @@ function processAliases() {
 }
 
 async function main() {
-  const pageSize = Math.max(process.argv[2] - 4, 4);
-  const lines = processAliases();
+  const aliasList = process.argv[4];
+  const terminalHeight = process.argv[2];
+  const outputFile = process.argv[3];
+
+  const pageSize = Math.max(terminalHeight - 4, 4);
+  const lines = processAliases(aliasList);
 
   const fuse = new Fuse(lines, {
     keys: ["original"],
@@ -80,11 +59,11 @@ async function main() {
     },
   ]);
 
-  if (answers.result === "<<exit>>") {
-    process.exit(0);
+  try {
+    fs.writeFileSync(outputFile, `${answers.result}\n`);
+  } catch (err) {
+    console.error(err);
   }
-
-  await executeCommand(answers.result);
 }
 
 await main();
