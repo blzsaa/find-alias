@@ -4,8 +4,7 @@ import Fuse from "fuse.js";
 
 inquirer.registerPrompt("autocomplete", inquirerPrompt);
 
-export default async function promptUI(lines) {
-  const terminalHeight = process.argv[2];
+export default async function promptUI(lines, terminalHeight) {
   const pageSize = Math.max(terminalHeight - 4, 4);
 
   const fuse = new Fuse(lines, {

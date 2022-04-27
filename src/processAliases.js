@@ -12,8 +12,8 @@ function sanitizeCommand(a) {
   return a.startsWith("='") ? a.slice(2, -1) : a.substring(1);
 }
 
-export default function processAliases() {
-  const aliases = process.argv[4]
+export default function processAliases(aliasesList) {
+  const aliases = aliasesList
     .split("\n")
     .map((line) => sanitizeAlias(line))
     .map((aliasLine) => {

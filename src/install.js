@@ -17,8 +17,8 @@ function installOn(shell) {
       console.log(chalk.green(`Installed for ${shell}`));
       console.log(
         chalk.green(
-          `Please either restart the terminal or when you run ${shell} execute: source ~/.${shell}rc `
-        )
+          `Please either restart the terminal or in ${shell} shell execute: `
+        ) + chalk.green.bold(`source ~/.${shell}rc`)
       );
       console.log(
         chalk.green(`Then type ${chalk.bold("fa")} to use find-alias`)

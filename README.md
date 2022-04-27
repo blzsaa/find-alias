@@ -7,7 +7,7 @@
 - `git clone https://github.com/blzsaa/find-alias.git $HOME/.find-alias`
 - `cd $HOME/.find-alias; npm ci`
 - `npm install -g .`
-- `find-alias`
+- `fa --install`
 
 ## Usage
 
