@@ -1,8 +1,12 @@
+#!/usr/bin/env node
+
 import chalk from "chalk";
 import inquirer from "inquirer";
 import inquirerPrompt from "inquirer-autocomplete-prompt";
 import Fuse from "fuse.js";
 import fs from "fs";
+import { homedir } from "os";
+import * as path from "path";
 
 inquirer.registerPrompt("autocomplete", inquirerPrompt);
 
@@ -20,7 +24,6 @@ function sanitizeCommand(a) {
 function processAliases(aliasesInput) {
   const aliases = aliasesInput
     .split("\n")
-    .filter((a) => a && !a.includes("index.js $(alias)'"))
     .map((line) => sanitizeAlias(line))
     .map((aliasLine) => {
       const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
@@ -36,7 +39,55 @@ function processAliases(aliasesInput) {
   return aliases;
 }
 
+function copyFile() {
+  fs.copyFileSync(".find-alias.sh", path.join(homedir(), ".find-alias.sh"));
+}
+
+function installOn(shell) {
+  const shellRcFile = path.join(homedir(), `.${shell}rc`);
+  const source = `\n#find-alias\nsource ~/.find-alias.sh\n`;
+  if (fs.existsSync(shellRcFile)) {
+    const bashrcContent = fs.readFileSync(shellRcFile);
+    if (!bashrcContent.includes(source)) {
+      fs.appendFileSync(shellRcFile, source);
+      console.log(chalk.green(`Installed for ${shell}`));
+      console.log(
+        chalk.green(
+          `Please either restart the terminal or when you run ${shell} execute: source ~/.${shell}rc `
+        )
+      );
+      console.log(
+        chalk.green(`Then type ${chalk.bold("fa")} to use find-alias`)
+      );
+    } else {
+      console.log(chalk.gray(`Already installed for ${shell}`));
+    }
+  } else {
+    console.log(
+      chalk.gray(
+        `Skipping installing on ${shell} as no .${shell}rc file were found in ${homedir()}`
+      )
+    );
+  }
+}
+
+function install() {
+  console.log(chalk.bold("Installing find-alias"));
+  copyFile();
+  installOn("bash");
+  installOn("zsh");
+  console.log(
+    chalk.bold(
+      "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+    )
+  );
+}
+
 async function main() {
+  if (process.argv.length === 2) {
+    install();
+    return;
+  }
   const aliasList = process.argv[4];
   const terminalHeight = process.argv[2];
   const outputFile = process.argv[3];
@@ -66,4 +117,4 @@ async function main() {
   }
 }
 
-await main();
+main().then((r) => r);

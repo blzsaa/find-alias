@@ -6,8 +6,8 @@
 
 - `git clone https://github.com/blzsaa/find-alias.git $HOME/.find-alias`
 - `cd $HOME/.find-alias; npm ci`
-- Add the following line to your \*rc (.zshrc, .bashrc, .bash_profile in OSX):  
-  `[[ -s "$HOME/.find-alias/index.js" ]] && source "$HOME"/.find-alias/install.sh`
+- `npm install -g .`
+- `find-alias`
 
 ## Usage
 

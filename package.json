@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "interactive aliases finder and executor",
   "main": "index.js",
+  "bin": {
+    "find-alias": "index.js"
+  },
   "scripts": {
     "lint:check": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
