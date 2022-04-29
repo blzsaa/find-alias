@@ -1,8 +1,8 @@
 import inquirer from "inquirer";
-import inquirerPrompt from "inquirer-autocomplete-prompt";
 import Fuse from "fuse.js";
+import TabbableAutocompletePrompt from "./TabbableAutocompletePrompt.js";
 
-inquirer.registerPrompt("autocomplete", inquirerPrompt);
+inquirer.registerPrompt("autocomplete", TabbableAutocompletePrompt);
 
 export default async function promptUI(lines, terminalHeight) {
   const pageSize = Math.max(terminalHeight - 4, 4);
@@ -11,14 +11,26 @@ export default async function promptUI(lines, terminalHeight) {
     keys: ["original"],
   });
 
-  return inquirer.prompt([
+  const { alias } = await inquirer.prompt([
     {
       type: "autocomplete",
-      name: "result",
+      name: "alias",
+      message: "filter aliases",
       source: (_, input = "") =>
         input ? fuse.search(input).map((a) => a.item) : lines,
       pageSize,
       validate: (val) => (val ? true : "Type something!"),
     },
   ]);
+  if (alias.submitKey === "tab") {
+    const { args } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "args",
+        message: alias.key,
+      },
+    ]);
+    return `${alias.command} ${args}`;
+  }
+  return alias.command;
 }

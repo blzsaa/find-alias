@@ -20,11 +20,15 @@ export default function processAliases(aliasesList) {
       const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
       const command = aliasLine.substring(aliasLine.indexOf("="));
       const y = chalk.bold(shortcut) + chalk.gray(command);
-      return { name: y, value: sanitizeCommand(command), original: aliasLine };
+      return {
+        name: y,
+        value: { key: shortcut, command: sanitizeCommand(command) },
+        original: aliasLine,
+      };
     });
   aliases.push(new inquirer.Separator(), {
     name: chalk.red("<<exit>>"),
-    value: "",
+    value: { command: "" },
     original: "<<exit>>",
   });
   return aliases;

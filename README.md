@@ -12,7 +12,16 @@
 ## Usage
 
 - run `fa`
-- write in any keyword in the quick filter and choose any of the aliases to run
+- to find and run an alias:
+  - write in any keyword in the quick filter
+  - use up and down button to choose any of the aliases from the filtered list
+  - press \<enter> to run chosen alias
+- to find and add extra arguments before running an alias:
+  - write in any keyword in the quick filter
+  - use up and down button to choose from the filtered list
+  - press \<tab>
+  - write in the extra arguments
+  - press \<enter> to run
 
 ## Contributing
 

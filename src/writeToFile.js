@@ -1,8 +1,8 @@
 import fs from "fs";
 
-export default function writeToFile(outputFile, answers) {
+export default function writeToFile(outputFile, command) {
   try {
-    fs.writeFileSync(outputFile, `${answers.result}\n`);
+    fs.writeFileSync(outputFile, `${command}\n`);
   } catch (err) {
     console.error(err);
   }
