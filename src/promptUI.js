@@ -30,7 +30,7 @@ export default async function promptUI(lines, terminalHeight) {
         message: alias.key,
       },
     ]);
-    return `${alias.command} ${args}`;
+    return `${alias.key} ${args}`;
   }
-  return alias.command;
+  return alias.key;
 }
