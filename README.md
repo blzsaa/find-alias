@@ -4,8 +4,9 @@
 
 ## Installation
 
-- `git clone https://github.com/blzsaa/find-alias.git $HOME/.find-alias`
-- `cd $HOME/.find-alias; npm ci`
+- `git clone https://github.com/blzsaa/find-alias.git`
+- `cd find-aliasnpm ci`
+- `npm ci`
 - `npm install -g .`
 - `fa --install`
 
