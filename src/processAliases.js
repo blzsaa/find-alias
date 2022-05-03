@@ -28,7 +28,7 @@ export default function processAliases(aliasesList) {
     });
   aliases.push(new inquirer.Separator(), {
     name: chalk.red("<<exit>>"),
-    value: { command: "" },
+    value: { key: "", command: "" },
     original: "<<exit>>",
   });
   return aliases;
