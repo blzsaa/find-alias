@@ -1,18 +1,18 @@
-import sinon from "sinon";
+import sinon from "ts-sinon";
 import fs from "fs";
-import chai from "chai";
+import chai = require("chai");
 import os from "os";
-import stripAnsi from "strip-ansi";
-import FindAliasInstaller from "../../src/FindAliasInstaller.js";
+import FindAliasInstaller from "@/FindAliasInstaller";
+import { verifyLogs } from "./helper";
 
 chai.should();
 
 describe("install", () => {
-  let readFileSync;
-  let copyFileSync;
-  let existsSync;
-  let appendFileSync;
-  let consoleStub;
+  let readFileSync: sinon.SinonStub;
+  let copyFileSync: sinon.SinonStub;
+  let existsSync: sinon.SinonStub;
+  let appendFileSync: sinon.SinonStub;
+  let consoleStub: sinon.SinonStub;
 
   beforeEach(() => {
     readFileSync = sinon.stub(fs, "readFileSync");
@@ -27,27 +27,17 @@ describe("install", () => {
   afterEach(() => {
     sinon.restore();
   });
-
-  function verifyLogs(...expectedLogs) {
-    expectedLogs.forEach((expectedLog, index) => {
-      const actualMessage = consoleStub.getCall(index).args[0];
-      stripAnsi(actualMessage).should.be.equal(expectedLog);
-    });
-    consoleStub.getCalls().should.have.length(expectedLogs.length);
-  }
-
   describe("when neither bash nor zsh are installed", () => {
     it("should skip copying config files and notify user about it", () => {
       existsSync.returns(false);
 
       FindAliasInstaller.install();
 
-      // eslint-disable-next-line no-unused-expressions
       copyFileSync.notCalled.should.be.true;
-      // eslint-disable-next-line no-unused-expressions
       appendFileSync.notCalled.should.be.true;
 
       verifyLogs(
+        consoleStub,
         "Installing find-alias",
         "Skipping installing on bash as no .bashrc file were found in /home/dir",
         "Skipping installing on zsh as no .zshrc file were found in /home/dir",
@@ -75,6 +65,7 @@ describe("install", () => {
           "\n#find-alias\nsource ~/.find-alias.sh\n",
         ]);
         verifyLogs(
+          consoleStub,
           "Installing find-alias",
           "Installed for bash",
           "Please either restart the terminal or in bash shell execute: source ~/.bashrc",
@@ -102,6 +93,7 @@ describe("install", () => {
         sinon.assert.notCalled(appendFileSync);
 
         verifyLogs(
+          consoleStub,
           "Installing find-alias",
           "Already installed for bash",
           "Skipping installing on zsh as no .zshrc file were found in /home/dir",
@@ -134,6 +126,7 @@ describe("install", () => {
           "\n#find-alias\nsource ~/.find-alias.sh\n",
         ]);
         verifyLogs(
+          consoleStub,
           "Installing find-alias",
           "Installed for bash",
           "Please either restart the terminal or in bash shell execute: source ~/.bashrc",
@@ -166,6 +159,7 @@ describe("install", () => {
         sinon.assert.notCalled(appendFileSync);
 
         verifyLogs(
+          consoleStub,
           "Installing find-alias",
           "Already installed for bash",
           "Already installed for zsh",

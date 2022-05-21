@@ -1,19 +1,20 @@
-import chalk from "chalk";
-import inquirer from "inquirer";
+import pc = require("picocolors");
+import inquirer = require("inquirer");
+import { PromptLine } from "@/types";
 
 export default class AliasProcessor {
-  static sanitizeAlias(a) {
+  static sanitizeAlias(a: string) {
     // bash format: alias key='command' vs zsh format: key=command
     const b = a.startsWith("alias ") ? a.substring("alias ".length) : a;
     // https://unix.stackexchange.com/a/11382
     return b.startsWith("-- ") ? b.substring(3) : b;
   }
 
-  static sanitizeCommand(a) {
+  static sanitizeCommand(a: string) {
     return a.startsWith("='") ? a.slice(2, -1) : a.substring(1);
   }
 
-  static cutAndTransformAliases(aliasesList) {
+  static cutAndTransformAliases(aliasesList: string) {
     if (
       aliasesList === undefined ||
       aliasesList === null ||
@@ -27,7 +28,7 @@ export default class AliasProcessor {
       .map((aliasLine) => {
         const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
         const command = aliasLine.substring(aliasLine.indexOf("="));
-        const y = chalk.bold(shortcut) + chalk.gray(command);
+        const y = pc.bold(shortcut) + pc.gray(command);
         return {
           name: y,
           value: {
@@ -39,13 +40,14 @@ export default class AliasProcessor {
       });
   }
 
-  static processAliases(aliasesList) {
-    const aliases = AliasProcessor.cutAndTransformAliases(aliasesList);
+  static processAliases(aliasesList: string) {
+    const aliases: PromptLine[] =
+      AliasProcessor.cutAndTransformAliases(aliasesList);
     aliases.push(
       ...[
         new inquirer.Separator(),
         {
-          name: chalk.red("<<exit>>"),
+          name: pc.red("<<exit>>"),
           value: { key: "", command: "" },
           original: "<<exit>>",
         },

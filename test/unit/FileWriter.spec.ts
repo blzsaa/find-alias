@@ -1,8 +1,8 @@
-import sinon from "sinon";
+import sinon from "ts-sinon";
 import fs from "fs";
 import chai from "chai";
 
-import FileWriter from "../../src/FileWriter.js";
+import FileWriter from "@/FileWriter";
 
 chai.should();
 

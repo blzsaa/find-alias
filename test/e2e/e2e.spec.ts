@@ -1,5 +1,6 @@
-import run, { DOWN, ENTER } from "inquirer-test";
-import { fileURLToPath } from "url";
+/* eslint-disable */
+// @ts-ignore
+import run, { DOWN, ENTER } from "inquirer-test"; /* eslint-enable */
 import { dirname } from "path";
 import * as chai from "chai";
 
@@ -7,16 +8,15 @@ import tmp from "tmp";
 import fs from "fs";
 
 chai.should();
-const filename = fileURLToPath(import.meta.url);
-const pathToMainScript = `${dirname(filename)}/../../src/index.js`;
+const pathToMainScript = `${dirname(__filename)}/../../dist/index.js`;
 const TAB = "\t";
 
 describe("find-alias", () => {
-  let outputFile;
+  let outputFile: { name: string };
 
-  async function runFa(aliases, combo) {
+  async function runFa(aliases: string[], combo: string[]) {
     const a = aliases.join("\n");
-    const aa = [
+    const aa: string[] = [
       pathToMainScript,
       "--aliases",
       a,
