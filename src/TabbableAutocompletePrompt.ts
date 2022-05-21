@@ -1,13 +1,15 @@
-import AutocompletePrompt from "inquirer-autocomplete-prompt";
-import ReplaceStringScreenManager from "./ReplaceStringScreenManager.js";
+import AutocompletePrompt = require("inquirer-autocomplete-prompt");
+import { Answers, QuestionCollection } from "inquirer";
+import { Interface as ReadLineInterface } from "readline";
+import ReplaceStringScreenManager from "@/ReplaceStringScreenManager";
 
-export default class TabbableAutocompletePrompt extends AutocompletePrompt {
-  submitKey = undefined;
+export default class TabbableAutocompletePrompt extends AutocompletePrompt<Answers> {
+  submitKey?: string = undefined;
 
   constructor(
-    questions /*: Array<any> */,
-    rl /*: readline$Interface */,
-    answers /*: Array<any> */
+    questions: QuestionCollection,
+    rl: ReadLineInterface,
+    answers: Answers
   ) {
     super(questions, rl, answers);
     super.screen = new ReplaceStringScreenManager(
@@ -17,11 +19,11 @@ export default class TabbableAutocompletePrompt extends AutocompletePrompt {
     );
   }
 
-  onKeypress(e /* : {key: { name: string, ctrl: boolean }, value: string } */) {
+  onKeypress(e: { key: { name: string; ctrl: boolean }; value: string }) {
     const keyName = (e.key && e.key.name) || undefined;
     if (keyName === "tab") {
       this.submitKey = "tab";
-      this.onSubmit();
+      this.onSubmit(this.rl.line);
     } else {
       super.onKeypress(e);
     }

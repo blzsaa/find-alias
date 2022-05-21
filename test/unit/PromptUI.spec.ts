@@ -1,18 +1,21 @@
-import sinon from "sinon/pkg/sinon-esm.js";
 import inquirer from "inquirer";
 import chai from "chai";
-import PromptUI from "../../src/PromptUI.js";
+import PromptUI from "@/PromptUI";
+import sinon from "ts-sinon";
+import { transform } from "./helper";
 
 chai.should();
 
-function matchPromptWith(name, type) {
+function matchPromptWith(name: string, type: string) {
   return sinon.match(
     (value) => value[0].name === name && value[0].type === type
   );
 }
 
 describe("promptUI", () => {
-  let stub;
+  let stub: sinon.SinonStub;
+  const lines = transform(["a", "b", "c"]);
+
   beforeEach(() => {
     stub = sinon.stub(inquirer, "prompt");
   });
@@ -25,7 +28,7 @@ describe("promptUI", () => {
         .withArgs(matchPromptWith("alias", "autocomplete"))
         .resolves({ alias: { key: "b", submitKey: "enter" } });
 
-      const actual = await PromptUI.prompt(["a", "b", "c"], 10);
+      const actual = await PromptUI.prompt(lines, 10);
 
       actual.should.be.deep.equal("b");
     });
@@ -38,7 +41,7 @@ describe("promptUI", () => {
         .withArgs(matchPromptWith("args", "input"))
         .resolves({ args: "arg1 arg2" });
 
-      const actual = await PromptUI.prompt(["a", "b", "c"], 10);
+      const actual = await PromptUI.prompt(lines, 10);
 
       actual.should.be.deep.equal("b arg1 arg2");
     });

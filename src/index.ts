@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import FindAlias from "./FindAlias.js";
+import FindAlias from "@/FindAlias";
 
 FindAlias.run().then((r) => r);

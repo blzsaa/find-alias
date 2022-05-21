@@ -1,14 +1,18 @@
-import inquirer from "inquirer";
 import Fuse from "fuse.js";
-import TabbableAutocompletePrompt from "./TabbableAutocompletePrompt.js";
+import inquirer = require("inquirer");
+import TabbableAutocompletePrompt from "@/TabbableAutocompletePrompt";
+import { PromptLine } from "@/types";
 
 inquirer.registerPrompt("autocomplete", TabbableAutocompletePrompt);
 
 export default class PromptUI {
-  static async prompt(lines, terminalHeight) {
+  static async prompt(
+    lines: PromptLine[],
+    terminalHeight: number
+  ): Promise<string> {
     const pageSize = Math.max(terminalHeight - 4, 4);
 
-    this.fuse = new Fuse(lines, {
+    const fuse = new Fuse(lines, {
       keys: ["original"],
     });
     const { alias } = await inquirer.prompt([
@@ -16,8 +20,8 @@ export default class PromptUI {
         type: "autocomplete",
         name: "alias",
         message: "filter aliases",
-        source: (_, input = "") =>
-          input ? this.fuse.search(input).map((a) => a.item) : lines,
+        source: (_: never, input = "") =>
+          input ? fuse.search(input).map((a) => a.item) : lines,
         pageSize,
         validate: (val) => (val ? true : "Type something!"),
       },

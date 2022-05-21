@@ -1,47 +1,42 @@
 import * as chai from "chai";
 
 import inquirer from "inquirer";
-import chalk from "chalk";
-import AliasProcessor from "../../src/AliasProcessor.js";
+import pc from "picocolors";
+import AliasProcessor from "@/AliasProcessor";
+import { PromptLine } from "@/types";
 
 chai.should();
 
-function expectedDummyAlias(command) {
+function expectedDummyAlias(command: string) {
   return {
-    name: chalk.bold(command) + chalk.gray(`='echo ${command}'`),
+    name: pc.bold(command) + pc.gray(`='echo ${command}'`),
     value: { key: command, command: `echo ${command}` },
     original: `${command}='echo ${command}'`,
   };
 }
 
 describe("processAliases", () => {
-  let actual;
+  let actual: PromptLine[] | undefined = undefined;
   afterEach(() => {
-    actual.should.deep.contain(new inquirer.Separator(), {
-      name: chalk.red("<<exit>>"),
+    actual?.should.deep.contain(new inquirer.Separator()).and.deep.contain({
+      name: pc.red("<<exit>>"),
       value: { key: "", command: "" },
       original: "<<exit>>",
     });
     actual = undefined;
   });
   describe("when no alias is sent to processAliases", () => {
-    [
-      { value: "", name: "emptyString" },
-      { value: null, name: "null" },
-      { value: undefined, name: "undefined" },
-    ].forEach((input) => {
-      describe(`input aliasList is: ${input.name}`, () => {
-        it("should return with separator and exit", () => {
-          actual = AliasProcessor.processAliases(input.value);
-          actual.should.be.deep.equal([
-            new inquirer.Separator(),
-            {
-              name: chalk.red("<<exit>>"),
-              value: { key: "", command: "" },
-              original: "<<exit>>",
-            },
-          ]);
-        });
+    describe("input aliasList is: emptyString", () => {
+      it("should return with separator and exit", () => {
+        actual = AliasProcessor.processAliases("");
+        actual.should.be.deep.equal([
+          new inquirer.Separator(),
+          {
+            name: pc.red("<<exit>>"),
+            value: { key: "", command: "" },
+            original: "<<exit>>",
+          },
+        ]);
       });
     });
   });

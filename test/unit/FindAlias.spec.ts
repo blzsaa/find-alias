@@ -1,18 +1,18 @@
-import sinon from "sinon";
+import sinon from "ts-sinon";
 import chai from "chai";
 import os from "os";
-import stripAnsi from "strip-ansi";
 
-import FindAliasInstaller from "../../src/FindAliasInstaller.js";
-import AliasProcessor from "../../src/AliasProcessor.js";
-import PromptUI from "../../src/PromptUI.js";
-import FileWriter from "../../src/FileWriter.js";
-import FindAlias from "../../src/FindAlias.js";
+import FindAliasInstaller from "@/FindAliasInstaller";
+import AliasProcessor from "@/AliasProcessor";
+import PromptUI from "@/PromptUI";
+import FileWriter from "@/FileWriter";
+import FindAlias from "@/FindAlias";
+import { transform, verifyLogs } from "./helper";
 
 chai.should();
 
 describe("index", () => {
-  let consoleStub;
+  let consoleStub: sinon.SinonStub;
   let originalProcessArgv = JSON.stringify(process.argv);
   before(() => {
     originalProcessArgv = JSON.stringify(process.argv);
@@ -28,19 +28,14 @@ describe("index", () => {
     process.argv = JSON.parse(originalProcessArgv);
   });
 
-  function verifyLogs(...expectedLogs) {
-    expectedLogs.forEach((expectedLog, index) => {
-      const actualMessage = consoleStub.getCall(index).args[0];
-      stripAnsi(actualMessage).should.be.equal(expectedLog);
-    });
-    consoleStub.getCalls().should.have.length(expectedLogs.length);
-  }
-
   describe("when calling main without arguments", () => {
     it("should write out error message to console", () => {
       FindAlias.run();
 
-      verifyLogs("Incorrect arguments, to install call with --install flag");
+      verifyLogs(
+        consoleStub,
+        "Incorrect arguments, to install call with --install flag"
+      );
     });
   });
   describe("when calling main with install flag", () => {
@@ -55,17 +50,17 @@ describe("index", () => {
   });
   describe("when calling main with aliases", () => {
     describe("and with outputFile", () => {
-      let aliasProcessorStub;
-      let promptUIStub;
-      let fileWriterStub;
+      let aliasProcessorStub: sinon.SinonStub;
+      let promptUIStub: sinon.SinonStub;
+      let fileWriterStub: sinon.SinonStub;
 
       beforeEach(() => {
         aliasProcessorStub = sinon
           .stub(AliasProcessor, "processAliases")
-          .returns(["alias1", "alias2", "alias3"]);
+          .returns(transform(["alias1", "alias2", "alias3"]));
         promptUIStub = sinon
           .stub(PromptUI, "prompt")
-          .returns("alias1 arg1 arg2");
+          .resolves("alias1 arg1 arg2");
         fileWriterStub = sinon.stub(FileWriter, "writeToFile");
       });
       describe("and no terminal height", () => {
@@ -81,7 +76,7 @@ describe("index", () => {
             "alias1alias2alias3",
           ]);
           promptUIStub.firstCall.args.should.be.deep.equal([
-            ["alias1", "alias2", "alias3"],
+            transform(["alias1", "alias2", "alias3"]),
             4,
           ]);
           fileWriterStub.firstCall.args.should.be.deep.equal([
@@ -104,7 +99,7 @@ describe("index", () => {
             "alias1alias2alias3",
           ]);
           promptUIStub.firstCall.args.should.be.deep.equal([
-            ["alias1", "alias2", "alias3"],
+            transform(["alias1", "alias2", "alias3"]),
             100,
           ]);
           fileWriterStub.firstCall.args.should.be.deep.equal([
