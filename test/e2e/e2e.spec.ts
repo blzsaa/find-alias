@@ -74,7 +74,6 @@ describe("find-alias", () => {
     });
     describe("and filtering to the second alias and pressing tab", async () => {
       it("should write second alias key to output file", async () => {
-        // this.timeout(60000);
         await runFa(
           ["alias www='echo www'", "alias asd2='echo asd2'"],
           ["d2", TAB, "suffix", ENTER]

@@ -12,7 +12,7 @@
     "postbuild": "chmod +x dist/index.js",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "ts-mocha --paths './test/unit/*.spec.ts'",
-    "test:unit:watch": "ts-mocha './test/unit/**/*.spec.ts' -w --watch-files '**/*.ts'",
+    "test:unit:watch": "ts-mocha --paths './test/unit/**/*.spec.ts' -w --watch-files '**/*.ts'",
     "test:e2e": "npm run build && ts-mocha --paths './test/e2e/*.spec.ts'",
     "lint:check": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
