@@ -42,6 +42,12 @@
   aliases could be easily found by searching keywords `commit` and `amend` and then you can choose which ever you need
   at the moment.
 
+## Uninstalling
+
+1. `npm uninstall -g find-alias`
+1. remove `~/.find-alias.sh` file from your home directory
+1. remove `#find-alias` part from your `.bashrc` or `.zshrc` file
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
