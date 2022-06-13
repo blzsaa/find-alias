@@ -6,7 +6,8 @@ import * as path from "path";
 export default class FindAliasInstaller {
   static installOn(shell: string) {
     const shellRcFile = path.join(os.homedir(), `.${shell}rc`);
-    const source = "\n#find-alias\nsource ~/.find-alias.sh\n";
+    const source =
+      "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
     if (fs.existsSync(shellRcFile)) {
       fs.copyFileSync(
         ".find-alias.sh",
@@ -31,7 +32,7 @@ export default class FindAliasInstaller {
     } else {
       console.log(
         pc.gray(
-          `Skipping installing on ${shell} as no .${shell}rc file were found in ${os.homedir()}`
+          `Skipping installing on ${shell} as no .${shell}rc file were found in your home directory`
         )
       );
     }
@@ -43,7 +44,7 @@ export default class FindAliasInstaller {
     FindAliasInstaller.installOn("zsh");
     console.log(
       pc.bold(
-        "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+        "Find-alias is installed, restart your terminal and type: fa to use it"
       )
     );
   }
