@@ -7,19 +7,16 @@ import AliasProcessor from "@/AliasProcessor";
 import PromptUI from "@/PromptUI";
 import FileWriter from "@/FileWriter";
 import FindAlias from "@/FindAlias";
-import { transform, verifyLogs } from "./helper";
+import { transform } from "./helper";
 
 chai.should();
 
-describe("index", () => {
-  let consoleStub: sinon.SinonStub;
+describe("FindAlias", () => {
   let originalProcessArgv = JSON.stringify(process.argv);
   before(() => {
     originalProcessArgv = JSON.stringify(process.argv);
   });
   beforeEach(() => {
-    consoleStub = sinon.stub(console, "log");
-
     sinon.stub(os, "homedir").withArgs().returns("/home/dir");
   });
 
@@ -29,13 +26,12 @@ describe("index", () => {
   });
 
   describe("when calling main without arguments", () => {
-    it("should write out error message to console", () => {
+    it("should call to install()", () => {
+      const install = sinon.stub(FindAliasInstaller, "install").returns();
+
       FindAlias.run();
 
-      verifyLogs(
-        consoleStub,
-        "Incorrect arguments, to install call with --install flag"
-      );
+      sinon.assert.calledOnce(install);
     });
   });
   describe("when calling main with install flag", () => {

@@ -6,11 +6,12 @@
 
 ## Installation
 
-- `git clone https://github.com/blzsaa/find-alias.git`
-- `cd find-aliasnpm ci`
-- `npm ci`
-- `npm install -g .`
-- `fa --install`
+1. `git clone https://github.com/blzsaa/find-alias.git`
+1. `cd find-alias`
+1. `npm ci`
+1. `npm install -g .`
+1. `fa`
+1. `restart the terminal`
 
 ## Features
 

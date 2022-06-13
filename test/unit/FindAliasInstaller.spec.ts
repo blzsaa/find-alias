@@ -14,6 +14,9 @@ describe("install", () => {
   let appendFileSync: sinon.SinonStub;
   let consoleStub: sinon.SinonStub;
 
+  const content =
+    "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
+
   beforeEach(() => {
     readFileSync = sinon.stub(fs, "readFileSync");
     copyFileSync = sinon.stub(fs, "copyFileSync");
@@ -39,9 +42,9 @@ describe("install", () => {
       verifyLogs(
         consoleStub,
         "Installing find-alias",
-        "Skipping installing on bash as no .bashrc file were found in /home/dir",
-        "Skipping installing on zsh as no .zshrc file were found in /home/dir",
-        "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+        "Skipping installing on bash as no .bashrc file were found in your home directory",
+        "Skipping installing on zsh as no .zshrc file were found in your home directory",
+        "Find-alias is installed, restart your terminal and type: fa to use it"
       );
     });
   });
@@ -62,7 +65,7 @@ describe("install", () => {
         ]);
         appendFileSync.firstCall.args.should.be.deep.equal([
           "/home/dir/.bashrc",
-          "\n#find-alias\nsource ~/.find-alias.sh\n",
+          content,
         ]);
         verifyLogs(
           consoleStub,
@@ -70,8 +73,8 @@ describe("install", () => {
           "Installed for bash",
           "Please either restart the terminal or in bash shell execute: source ~/.bashrc",
           "Then type fa to use find-alias",
-          "Skipping installing on zsh as no .zshrc file were found in /home/dir",
-          "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+          "Skipping installing on zsh as no .zshrc file were found in your home directory",
+          "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
     });
@@ -82,7 +85,7 @@ describe("install", () => {
 
         readFileSync
           .withArgs("/home/dir/.bashrc")
-          .returns("<prefix>\n#find-alias\nsource ~/.find-alias.sh\n<suffix>");
+          .returns(`<prefix>${content}<suffix>`);
 
         FindAliasInstaller.install();
 
@@ -96,12 +99,13 @@ describe("install", () => {
           consoleStub,
           "Installing find-alias",
           "Already installed for bash",
-          "Skipping installing on zsh as no .zshrc file were found in /home/dir",
-          "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+          "Skipping installing on zsh as no .zshrc file were found in your home directory",
+          "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
     });
   });
+
   describe("when both zsh and bash are installed", () => {
     describe("and it is a first time install of find-alias", () => {
       it("should copy .find-alias.sh, set up both .bashrc and .zshrc files", () => {
@@ -119,11 +123,11 @@ describe("install", () => {
         ]);
         appendFileSync.firstCall.args.should.be.deep.equal([
           "/home/dir/.bashrc",
-          "\n#find-alias\nsource ~/.find-alias.sh\n",
+          content,
         ]);
         appendFileSync.secondCall.args.should.be.deep.equal([
           "/home/dir/.zshrc",
-          "\n#find-alias\nsource ~/.find-alias.sh\n",
+          content,
         ]);
         verifyLogs(
           consoleStub,
@@ -134,7 +138,7 @@ describe("install", () => {
           "Installed for zsh",
           "Please either restart the terminal or in zsh shell execute: source ~/.zshrc",
           "Then type fa to use find-alias",
-          "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+          "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
     });
@@ -145,10 +149,10 @@ describe("install", () => {
 
         readFileSync
           .withArgs("/home/dir/.bashrc")
-          .returns("<prefix>\n#find-alias\nsource ~/.find-alias.sh\n<suffix>");
+          .returns(`<prefix>${content}<suffix>`);
         readFileSync
           .withArgs("/home/dir/.zshrc")
-          .returns("<prefix>\n#find-alias\nsource ~/.find-alias.sh\n<suffix>");
+          .returns(`<prefix>${content}<suffix>`);
 
         FindAliasInstaller.install();
 
@@ -163,7 +167,7 @@ describe("install", () => {
           "Installing find-alias",
           "Already installed for bash",
           "Already installed for zsh",
-          "Find-alias is installed, type: fa to use it, if it is not working please restart your terminal"
+          "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
     });
