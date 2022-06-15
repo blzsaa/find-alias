@@ -7,11 +7,11 @@ export default class FindAliasInstaller {
   static installOn(shell: string) {
     const shellRcFile = path.join(os.homedir(), `.${shell}rc`);
     const source =
-      "\n#find-alias\nif command -v fa &> /dev/null; then source ~/find-alias.sh; fi\n";
+      "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
     if (fs.existsSync(shellRcFile)) {
       fs.copyFileSync(
-        "find-alias.sh",
-        path.join(os.homedir(), "find-alias.sh")
+        path.join(__dirname, "../find-alias.sh"),
+        path.join(os.homedir(), ".find-alias.sh")
       );
       const bashrcContent = fs.readFileSync(shellRcFile);
       if (!bashrcContent.includes(source)) {

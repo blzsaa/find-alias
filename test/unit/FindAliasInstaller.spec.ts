@@ -4,8 +4,10 @@ import chai = require("chai");
 import os from "os";
 import FindAliasInstaller from "@/FindAliasInstaller";
 import { verifyLogs } from "./helper";
+import chaiString = require("chai-string");
 
 chai.should();
+chai.use(chaiString);
 
 describe("install", () => {
   let readFileSync: sinon.SinonStub;
@@ -15,7 +17,7 @@ describe("install", () => {
   let consoleStub: sinon.SinonStub;
 
   const content =
-    "\n#find-alias\nif command -v fa &> /dev/null; then source ~/find-alias.sh; fi\n";
+    "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
 
   beforeEach(() => {
     readFileSync = sinon.stub(fs, "readFileSync");
@@ -161,9 +163,8 @@ describe("install", () => {
   });
 
   function verifyFindAliasShFileWasCopied() {
-    copyFileSync.firstCall.args.should.be.deep.equal([
-      "find-alias.sh",
-      "/home/dir/find-alias.sh",
-    ]);
+    const args = copyFileSync.firstCall.args;
+    args[0].should.endWith("/find-alias.sh");
+    args[1].should.be.equal("/home/dir/.find-alias.sh");
   }
 });
