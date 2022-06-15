@@ -20,7 +20,10 @@
     "release": "release-it"
   },
   "keywords": [
-    "alias"
+    "alias",
+    "bash",
+    "zsh",
+    "find alias"
   ],
   "author": "blzsaa",
   "license": "MIT",
