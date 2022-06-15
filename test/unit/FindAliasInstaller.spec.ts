@@ -4,8 +4,10 @@ import chai = require("chai");
 import os from "os";
 import FindAliasInstaller from "@/FindAliasInstaller";
 import { verifyLogs } from "./helper";
+import chaiString = require("chai-string");
 
 chai.should();
+chai.use(chaiString);
 
 describe("install", () => {
   let readFileSync: sinon.SinonStub;
@@ -51,18 +53,14 @@ describe("install", () => {
 
   describe("when bash is installed but zsh is not", () => {
     describe("and it is a first time install of find-alias", () => {
-      it("should copy .find-alias.sh, set up .bashrc file ans skip zsh", () => {
+      it("should copy find-alias.sh, set up .bashrc file ans skip zsh", () => {
         existsSync.withArgs("/home/dir/.bashrc").returns(true);
         existsSync.withArgs("/home/dir/.zshrc").returns(false);
 
         readFileSync.withArgs("/home/dir/.bashrc").returns("");
 
         FindAliasInstaller.install();
-
-        copyFileSync.firstCall.args.should.be.deep.equal([
-          ".find-alias.sh",
-          "/home/dir/.find-alias.sh",
-        ]);
+        verifyFindAliasShFileWasCopied();
         appendFileSync.firstCall.args.should.be.deep.equal([
           "/home/dir/.bashrc",
           content,
@@ -79,7 +77,7 @@ describe("install", () => {
       });
     });
     describe("and it is a reinstall", () => {
-      it("should copy .find-alias.sh, and skip setting up .bashrc file ans skip zsh", () => {
+      it("should copy find-alias.sh, and skip setting up .bashrc file ans skip zsh", () => {
         existsSync.withArgs("/home/dir/.bashrc").returns(true);
         existsSync.withArgs("/home/dir/.zshrc").returns(false);
 
@@ -89,10 +87,7 @@ describe("install", () => {
 
         FindAliasInstaller.install();
 
-        copyFileSync.firstCall.args.should.be.deep.equal([
-          ".find-alias.sh",
-          "/home/dir/.find-alias.sh",
-        ]);
+        verifyFindAliasShFileWasCopied();
         sinon.assert.notCalled(appendFileSync);
 
         verifyLogs(
@@ -108,7 +103,7 @@ describe("install", () => {
 
   describe("when both zsh and bash are installed", () => {
     describe("and it is a first time install of find-alias", () => {
-      it("should copy .find-alias.sh, set up both .bashrc and .zshrc files", () => {
+      it("should copy find-alias.sh, set up both .bashrc and .zshrc files", () => {
         existsSync.withArgs("/home/dir/.bashrc").returns(true);
         existsSync.withArgs("/home/dir/.zshrc").returns(true);
 
@@ -117,10 +112,7 @@ describe("install", () => {
 
         FindAliasInstaller.install();
 
-        copyFileSync.firstCall.args.should.be.deep.equal([
-          ".find-alias.sh",
-          "/home/dir/.find-alias.sh",
-        ]);
+        verifyFindAliasShFileWasCopied();
         appendFileSync.firstCall.args.should.be.deep.equal([
           "/home/dir/.bashrc",
           content,
@@ -143,7 +135,7 @@ describe("install", () => {
       });
     });
     describe("and it is a reinstall", () => {
-      it("should copy .find-alias.sh, and skip setting up .bashrc file ans skip zsh", () => {
+      it("should copy find-alias.sh, and skip setting up .bashrc file ans skip zsh", () => {
         existsSync.withArgs("/home/dir/.bashrc").returns(true);
         existsSync.withArgs("/home/dir/.zshrc").returns(true);
 
@@ -156,10 +148,7 @@ describe("install", () => {
 
         FindAliasInstaller.install();
 
-        copyFileSync.firstCall.args.should.be.deep.equal([
-          ".find-alias.sh",
-          "/home/dir/.find-alias.sh",
-        ]);
+        verifyFindAliasShFileWasCopied();
         sinon.assert.notCalled(appendFileSync);
 
         verifyLogs(
@@ -172,4 +161,10 @@ describe("install", () => {
       });
     });
   });
+
+  function verifyFindAliasShFileWasCopied() {
+    const args = copyFileSync.firstCall.args;
+    args[0].should.endWith("/find-alias.sh");
+    args[1].should.be.equal("/home/dir/.find-alias.sh");
+  }
 });
