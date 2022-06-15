@@ -71,6 +71,6 @@
   },
   "files": [
     "dist/**/*.js",
-    ".find-alias.sh"
+    "find-alias.sh"
   ]
 }
