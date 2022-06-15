@@ -1,5 +1,12 @@
 
 
+# [0.1.0-beta.4](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.3...0.1.0-beta.4) (2022-06-15)
+
+
+### Bug Fixes
+
+* **install:** make installable from other directories as well ([f626c4d](https://github.com/blzsaa/find-alias/commit/f626c4d44a23aa3abeba3828c16e81c0cc4f9a92))
+
 # [0.1.0-beta.3](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.2...0.1.0-beta.3) (2022-06-15)
 
 
