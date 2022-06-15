@@ -1,15 +1,14 @@
+[![npm version](https://badge.fury.io/js/find-alias.svg)](https://badge.fury.io/js/find-alias)
+
 # FIND ALIAS
 
 **Find-alias** is an interactive alias finder and executor, it helps you to quickly find and execute any aliases.
 
-![find-alias-example](./find-alias.gif)
+![find-alias-example](https://raw.githubusercontent.com/blzsaa/find-alias/main/find-alias.gif)
 
 ## Installation
 
-1. `git clone https://github.com/blzsaa/find-alias.git`
-1. `cd find-alias`
-1. `npm ci`
-1. `npm install -g .`
+1. `npm install -g find-alias`
 1. `fa`
 1. `restart the terminal`
 

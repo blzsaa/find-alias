@@ -20,11 +20,14 @@
     "prepare": "husky install",
     "release": "release-it"
   },
-  "keywords": [
-    "alias"
-  ],
-  "author": "blzsaa",
-  "license": "MIT",
+  "dependencies": {
+    "fuse.js": "^6.5.3",
+    "inquirer": "^8.2.2",
+    "inquirer-autocomplete-prompt": "^2.0.0",
+    "inquirer-test": "^2.0.1",
+    "picocolors": "^1.0.0",
+    "yargs": "^17.4.1"
+  },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
@@ -60,14 +63,25 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "dependencies": {
-    "fuse.js": "^6.5.3",
-    "inquirer": "^8.2.2",
-    "inquirer-autocomplete-prompt": "^2.0.0",
-    "inquirer-test": "^2.0.1",
-    "picocolors": "^1.0.0",
-    "yargs": "^17.4.1"
+  "keywords": [
+    "alias",
+    "bash",
+    "zsh",
+    "console",
+    "terminal",
+    "command",
+    "commands",
+    "finder",
+    "executor"
+  ],
+  "author": "blzsaa",
+  "license": "MIT",
+  "homepage": "https://github.com/blzsaa/find-alias#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blzsaa/find-alias.git"
   },
+  "bugs": "https://github.com/blzsaa/find-alias/issues",
   "files": [
     "dist/**/*.js",
     "find-alias.sh"
