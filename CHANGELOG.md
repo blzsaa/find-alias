@@ -1,5 +1,12 @@
 
 
+# [0.1.0-beta.3](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.2...0.1.0-beta.3) (2022-06-15)
+
+
+### Bug Fixes
+
+* **publish:** remove dot from find-alias.sh as hidden files are ignore by npm publish ([05e1b90](https://github.com/blzsaa/find-alias/commit/05e1b909e69368e8324499210597ea0e1b039e23))
+
 # [0.1.0-beta.2](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.1...0.1.0-beta.2) (2022-06-15)
 
 # [0.1.0-beta.1](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.0...0.1.0-beta.1) (2022-06-15)
