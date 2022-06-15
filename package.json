@@ -1,6 +1,6 @@
 {
   "name": "find-alias",
-  "version": "0.0.0",
+  "version": "0.1.0-0",
   "description": "interactive aliases finder and executor",
   "main": "dist/index.js",
   "bin": {
