@@ -1,5 +1,7 @@
 
 
+## [0.1.2](https://github.com/blzsaa/find-alias/compare/0.1.1...0.1.2) (2022-06-16)
+
 ## [0.1.1](https://github.com/blzsaa/find-alias/compare/0.1.0...0.1.1) (2022-06-16)
 
 # [0.1.0](https://github.com/blzsaa/find-alias/compare/0.1.0-beta.4...0.1.0) (2022-06-16)
