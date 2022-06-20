@@ -1,23 +1,34 @@
 import sinon from "ts-sinon";
 import chai from "chai";
-import os from "os";
 
 import FindAliasInstaller from "@/FindAliasInstaller";
-import AliasProcessor from "@/AliasProcessor";
-import PromptUI from "@/PromptUI";
-import FileWriter from "@/FileWriter";
 import FindAlias from "@/FindAlias";
+import FindAliasCommandInterpreter from "../../src/FindAliasCommandInterpreter";
+import AliasProcessor from "../../src/AliasProcessor";
+import PromptUI from "../../src/PromptUI";
+import OutputWriter from "../../src/OutputWriter";
+import { PromptLine } from "../../src/types";
+import Sinon from "ts-sinon";
 import { transform } from "./helper";
 
 chai.should();
 
 describe("FindAlias", () => {
   let originalProcessArgv = JSON.stringify(process.argv);
+  let findAliasInstallerStub: Sinon.SinonStub<[string], void>;
+  let aliasProcessorStub: Sinon.SinonStub<[string], PromptLine[]>;
+  let promptUIStub: Sinon.SinonStub<[PromptLine[], number], Promise<string>>;
+  let outputWriterStub: Sinon.SinonStub<[string | undefined, string], void>;
+
   before(() => {
     originalProcessArgv = JSON.stringify(process.argv);
   });
+
   beforeEach(() => {
-    sinon.stub(os, "homedir").withArgs().returns("/home/dir");
+    findAliasInstallerStub = sinon.stub(FindAliasInstaller, "install");
+    aliasProcessorStub = sinon.stub(AliasProcessor, "processAliases");
+    promptUIStub = sinon.stub(PromptUI, "prompt");
+    outputWriterStub = sinon.stub(OutputWriter, "write");
   });
 
   afterEach(() => {
@@ -25,85 +36,54 @@ describe("FindAlias", () => {
     process.argv = JSON.parse(originalProcessArgv);
   });
 
-  describe("when calling main without arguments", () => {
-    it("should call to install()", () => {
-      const install = sinon.stub(FindAliasInstaller, "install").returns();
+  describe("when interpreter returns with config object", () => {
+    it("should call FindAliasInstaller.install()", () => {
+      process.argv = ["arg1", "arg2", "arg3", "arg4"];
+      sinon
+        .stub(FindAliasCommandInterpreter, "interpret")
+        .withArgs(["arg3", "arg4"])
+        .returns({
+          configure: "command-name",
+        });
 
       FindAlias.run();
 
-      sinon.assert.calledOnce(install);
+      sinon.assert.calledOnce(findAliasInstallerStub);
+
+      findAliasInstallerStub.firstCall.args.should.be.deep.equal([
+        "command-name",
+      ]);
+      sinon.assert.notCalled(aliasProcessorStub);
+      sinon.assert.notCalled(promptUIStub);
+      sinon.assert.notCalled(outputWriterStub);
     });
   });
-  describe("when calling main with install flag", () => {
-    it("should call to install()", () => {
-      process.argv.push("--install");
-      const install = sinon.stub(FindAliasInstaller, "install").returns();
-
-      FindAlias.run();
-
-      sinon.assert.calledOnce(install);
-    });
-  });
-  describe("when calling main with aliases", () => {
-    describe("and with outputFile", () => {
-      let aliasProcessorStub: sinon.SinonStub;
-      let promptUIStub: sinon.SinonStub;
-      let fileWriterStub: sinon.SinonStub;
-
-      beforeEach(() => {
-        aliasProcessorStub = sinon
-          .stub(AliasProcessor, "processAliases")
-          .returns(transform(["alias1", "alias2", "alias3"]));
-        promptUIStub = sinon
-          .stub(PromptUI, "prompt")
-          .resolves("alias1 arg1 arg2");
-        fileWriterStub = sinon.stub(FileWriter, "writeToFile");
-      });
-      describe("and no terminal height", () => {
-        it("should call 1st processAliases 2nd promptUI 3rd writeToFile, and use 4 as terminal height", async () => {
-          process.argv.push(
-            "--aliases=alias1alias2alias3",
-            "--output-file=./fakeFile"
-          );
-
-          await FindAlias.run();
-
-          aliasProcessorStub.firstCall.args.should.be.deep.equal([
-            "alias1alias2alias3",
-          ]);
-          promptUIStub.firstCall.args.should.be.deep.equal([
-            transform(["alias1", "alias2", "alias3"]),
-            4,
-          ]);
-          fileWriterStub.firstCall.args.should.be.deep.equal([
-            "./fakeFile",
-            "alias1 arg1 arg2",
-          ]);
+  describe("when interpreter returns with alias object", () => {
+    it("should call processAlias, prompt and writeToFile()", async () => {
+      process.argv = ["arg1", "arg2", "arg3", "arg4"];
+      sinon
+        .stub(FindAliasCommandInterpreter, "interpret")
+        .withArgs(["arg3", "arg4"])
+        .returns({
+          aliases: "aliases",
+          outputFile: "outputFile",
+          pageSize: 12,
         });
-      });
-      describe("and with terminal height", () => {
-        it("should call 1st processAliases 2nd promptUI 3rd writeToFile", async () => {
-          process.argv.push(
-            "--aliases=alias1alias2alias3",
-            "--output-file=./fakeFile",
-            "--height=100"
-          );
 
-          await FindAlias.run();
+      aliasProcessorStub
+        .withArgs("aliases")
+        .returns(transform(["alias1", "alias2", "alias3"]));
+      promptUIStub
+        .withArgs(transform(["alias1", "alias2", "alias3"]), 12)
+        .resolves("answer");
 
-          aliasProcessorStub.firstCall.args.should.be.deep.equal([
-            "alias1alias2alias3",
-          ]);
-          promptUIStub.firstCall.args.should.be.deep.equal([
-            transform(["alias1", "alias2", "alias3"]),
-            100,
-          ]);
-          fileWriterStub.firstCall.args.should.be.deep.equal([
-            "./fakeFile",
-            "alias1 arg1 arg2",
-          ]);
-        });
-      });
+      await FindAlias.run();
+
+      outputWriterStub.firstCall.args.should.be.deep.equal([
+        "outputFile",
+        "answer",
+      ]);
+      sinon.assert.notCalled(findAliasInstallerStub);
     });
   });
 });

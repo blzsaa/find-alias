@@ -18,7 +18,6 @@ describe("find-alias", () => {
     const a = aliases.join("\n");
     const aa: string[] = [
       pathToMainScript,
-      "--aliases",
       a,
       "--output-file",
       outputFile.name,
