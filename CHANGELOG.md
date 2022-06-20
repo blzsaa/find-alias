@@ -1,5 +1,13 @@
 
 
+# [1.0.0](https://github.com/blzsaa/find-alias/compare/0.1.0-0...1.0.0) (2022-06-20)
+
+
+### Features
+
+* add option to run without installation with npx ([9457d26](https://github.com/blzsaa/find-alias/commit/9457d26eae5bb99d794a43e1cfdd36d039061539))
+* **install:** add option to configure find-alias's command-name, default remains: fa ([47b8217](https://github.com/blzsaa/find-alias/commit/47b821752da2e16872388caa4f01c5acfd606210))
+
 # 0.1.0-0 (2022-06-15)
 
 
