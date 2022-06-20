@@ -12,13 +12,16 @@ const pathToMainScript = `${dirname(__filename)}/../../dist/index.js`;
 const TAB = "\t";
 
 describe("find-alias", () => {
+  let aliasFile: { name: string };
   let outputFile: { name: string };
 
   async function runFa(aliases: string[], combo: string[]) {
     const a = aliases.join("\n");
+    fs.writeFileSync(aliasFile.name, a);
+
     const aa: string[] = [
       pathToMainScript,
-      a,
+      aliasFile.name,
       "--output-file",
       outputFile.name,
     ];
@@ -26,6 +29,7 @@ describe("find-alias", () => {
   }
 
   beforeEach(() => {
+    aliasFile = tmp.fileSync();
     outputFile = tmp.fileSync();
   });
   after(() => {
