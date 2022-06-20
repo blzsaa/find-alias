@@ -4,9 +4,12 @@ function <find-alias-caller> {
   fi
 
   tmp_file=$(mktemp -t find-alias.XXXXXXX)
-  command find-alias "$@" "$(alias | cat)" --page-size="$(tput lines)" --output-file="$tmp_file"
+  aliases_tmp_file=$(mktemp -t find-alias.XXXXXXX)
+  alias | cat >> "$aliases_tmp_file"
+  command find-alias "$@" "$aliases_tmp_file" --page-size="$(tput lines)" --output-file="$tmp_file"
   result="$(<"$tmp_file")"
   rm -f "$tmp_file"
+  rm -f "$aliases_tmp_file"
   eval "$result"
 
   if [[ -n "$BASH" ]]; then

@@ -1,6 +1,7 @@
 import pc = require("picocolors");
 import inquirer = require("inquirer");
 import { PromptLine } from "@/types";
+import fs from "fs";
 
 export default class AliasProcessor {
   static sanitizeAlias(a: string) {
@@ -15,15 +16,9 @@ export default class AliasProcessor {
   }
 
   static cutAndTransformAliases(aliasesList: string) {
-    if (
-      aliasesList === undefined ||
-      aliasesList === null ||
-      aliasesList === ""
-    ) {
-      return [];
-    }
     return aliasesList
       .split("\n")
+      .filter((line) => line.trim().length > 0)
       .map((line) => AliasProcessor.sanitizeAlias(line))
       .map((aliasLine) => {
         const shortcut = aliasLine.substring(0, aliasLine.indexOf("="));
@@ -40,7 +35,8 @@ export default class AliasProcessor {
       });
   }
 
-  static processAliases(aliasesList: string) {
+  static processAliases(aliasesFile: string) {
+    const aliasesList = fs.readFileSync(aliasesFile, "utf8");
     const aliases: PromptLine[] =
       AliasProcessor.cutAndTransformAliases(aliasesList);
     aliases.push(
