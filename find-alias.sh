@@ -1,11 +1,10 @@
-# find-alias
-function fa {
+function <find-alias-caller> {
   if [[ -n "$BASH" ]]; then
-    history -s fa "$@"
+    history -s <find-alias-caller> "$@"
   fi
 
   tmp_file=$(mktemp -t find-alias.XXXXXXX)
-  command fa "$@" --aliases="$(alias | cat)" --height="$(tput lines)" --output-file="$tmp_file"
+  command find-alias "$@" "$(alias | cat)" --page-size="$(tput lines)" --output-file="$tmp_file"
   result="$(<"$tmp_file")"
   rm -f "$tmp_file"
   eval "$result"

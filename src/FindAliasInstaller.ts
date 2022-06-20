@@ -4,48 +4,51 @@ import os from "os";
 import * as path from "path";
 
 export default class FindAliasInstaller {
-  static installOn(shell: string) {
+  static install(commandName: string) {
+    console.log(pc.bold("Installing find-alias"));
+    const supportedShells = ["bash", "zsh"];
+    const installedShells = supportedShells.filter((shell) => {
+      const shellRcFile = path.join(os.homedir(), `.${shell}rc`);
+      return fs.existsSync(shellRcFile);
+    });
+    if (installedShells.length > 0) {
+      FindAliasInstaller.writeConfigFile(commandName);
+    }
+    installedShells.forEach((shell) => {
+      FindAliasInstaller.installOn(shell);
+    });
+    console.log(
+      `Find-alias is installed, restart your terminal and type: ${pc.bold(
+        commandName
+      )} to use it`
+    );
+  }
+
+  private static installOn(shell: string) {
+    console.log(`Installing for ${shell}`);
     const shellRcFile = path.join(os.homedir(), `.${shell}rc`);
     const source =
-      "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
-    if (fs.existsSync(shellRcFile)) {
-      fs.copyFileSync(
-        path.join(__dirname, "../find-alias.sh"),
-        path.join(os.homedir(), ".find-alias.sh")
-      );
-      const bashrcContent = fs.readFileSync(shellRcFile);
-      if (!bashrcContent.includes(source)) {
-        fs.appendFileSync(shellRcFile, source);
-        console.log(pc.green(`Installed for ${shell}`));
-        const command = `source ~/.${shell}rc`;
-        console.log(
-          pc.green(
-            `Please either restart the terminal or in ${shell} shell execute: ${pc.bold(
-              command
-            )}`
-          )
-        );
-        console.log(pc.green(`Then type ${pc.bold("fa")} to use find-alias`));
-      } else {
-        console.log(pc.gray(`Already installed for ${shell}`));
-      }
+      '\n#find-alias\n[[ -s "$HOME/.find-alias.sh" ]] && source "$HOME/.find-alias.sh"\n';
+
+    const bashrcContent = fs.readFileSync(shellRcFile);
+    if (!bashrcContent.includes(source)) {
+      fs.appendFileSync(shellRcFile, source);
+      console.log(pc.green(`Installed for ${shell}`));
     } else {
-      console.log(
-        pc.gray(
-          `Skipping installing on ${shell} as no .${shell}rc file were found in your home directory`
-        )
-      );
+      console.log(pc.gray(`Already installed for ${shell}`));
     }
   }
 
-  static install() {
-    console.log(pc.bold("Installing find-alias"));
-    FindAliasInstaller.installOn("bash");
-    FindAliasInstaller.installOn("zsh");
-    console.log(
-      pc.bold(
-        "Find-alias is installed, restart your terminal and type: fa to use it"
-      )
+  private static writeConfigFile(commandName: string) {
+    console.log(`Writing ${path.join(os.homedir(), ".find-alias.sh")} file`);
+    const content = fs.readFileSync(
+      path.join(__dirname, "../find-alias.sh"),
+      "utf8"
     );
+    fs.writeFileSync(
+      path.join(os.homedir(), ".find-alias.sh"),
+      content.replace(/<find-alias-caller>/g, commandName)
+    );
+    console.log(`File written`);
   }
 }

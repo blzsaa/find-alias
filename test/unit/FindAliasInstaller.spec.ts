@@ -1,31 +1,39 @@
 import sinon from "ts-sinon";
 import fs from "fs";
-import chai = require("chai");
 import os from "os";
 import FindAliasInstaller from "@/FindAliasInstaller";
 import { verifyLogs } from "./helper";
+import chai = require("chai");
 import chaiString = require("chai-string");
+import sinonChai = require("sinon-chai");
 
 chai.should();
 chai.use(chaiString);
+chai.use(sinonChai);
 
-describe("install", () => {
+describe("FindAliasInstaller", () => {
   let readFileSync: sinon.SinonStub;
-  let copyFileSync: sinon.SinonStub;
+  let writeFileSync: sinon.SinonStub;
   let existsSync: sinon.SinonStub;
   let appendFileSync: sinon.SinonStub;
   let consoleStub: sinon.SinonStub;
 
-  const content =
-    "\n#find-alias\nif command -v fa &> /dev/null; then source ~/.find-alias.sh; fi\n";
+  const rcFileContent =
+    '\n#find-alias\n[[ -s "$HOME/.find-alias.sh" ]] && source "$HOME/.find-alias.sh"\n';
 
   beforeEach(() => {
     readFileSync = sinon.stub(fs, "readFileSync");
-    copyFileSync = sinon.stub(fs, "copyFileSync");
+    writeFileSync = sinon.stub(fs, "writeFileSync");
     existsSync = sinon.stub(fs, "existsSync");
     appendFileSync = sinon.stub(fs, "appendFileSync");
     consoleStub = sinon.stub(console, "log");
 
+    readFileSync
+      .withArgs(
+        sinon.match((value) => ("" + value).endsWith("find-alias.sh")),
+        "utf8"
+      )
+      .returns("find-alias-script <find-alias-caller> <find-alias-caller>");
     sinon.stub(os, "homedir").withArgs().returns("/home/dir");
   });
 
@@ -36,16 +44,14 @@ describe("install", () => {
     it("should skip copying config files and notify user about it", () => {
       existsSync.returns(false);
 
-      FindAliasInstaller.install();
+      FindAliasInstaller.install("fa");
 
-      copyFileSync.notCalled.should.be.true;
-      appendFileSync.notCalled.should.be.true;
+      writeFileSync.should.have.not.been.called;
+      appendFileSync.should.have.not.been.called;
 
       verifyLogs(
         consoleStub,
         "Installing find-alias",
-        "Skipping installing on bash as no .bashrc file were found in your home directory",
-        "Skipping installing on zsh as no .zshrc file were found in your home directory",
         "Find-alias is installed, restart your terminal and type: fa to use it"
       );
     });
@@ -59,19 +65,20 @@ describe("install", () => {
 
         readFileSync.withArgs("/home/dir/.bashrc").returns("");
 
-        FindAliasInstaller.install();
+        FindAliasInstaller.install("fa");
+
         verifyFindAliasShFileWasCopied();
-        appendFileSync.firstCall.args.should.be.deep.equal([
+        appendFileSync.should.have.been.calledWith(
           "/home/dir/.bashrc",
-          content,
-        ]);
+          rcFileContent
+        );
         verifyLogs(
           consoleStub,
           "Installing find-alias",
+          "Writing /home/dir/.find-alias.sh file",
+          "File written",
+          "Installing for bash",
           "Installed for bash",
-          "Please either restart the terminal or in bash shell execute: source ~/.bashrc",
-          "Then type fa to use find-alias",
-          "Skipping installing on zsh as no .zshrc file were found in your home directory",
           "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
@@ -83,18 +90,19 @@ describe("install", () => {
 
         readFileSync
           .withArgs("/home/dir/.bashrc")
-          .returns(`<prefix>${content}<suffix>`);
+          .returns(`<prefix>${rcFileContent}<suffix>`);
 
-        FindAliasInstaller.install();
+        FindAliasInstaller.install("fa");
 
         verifyFindAliasShFileWasCopied();
-        sinon.assert.notCalled(appendFileSync);
-
+        appendFileSync.should.have.not.been.called;
         verifyLogs(
           consoleStub,
           "Installing find-alias",
+          "Writing /home/dir/.find-alias.sh file",
+          "File written",
+          "Installing for bash",
           "Already installed for bash",
-          "Skipping installing on zsh as no .zshrc file were found in your home directory",
           "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
@@ -110,26 +118,26 @@ describe("install", () => {
         readFileSync.withArgs("/home/dir/.zshrc").returns("");
         readFileSync.withArgs("/home/dir/.bashrc").returns("");
 
-        FindAliasInstaller.install();
+        FindAliasInstaller.install("fa");
 
         verifyFindAliasShFileWasCopied();
-        appendFileSync.firstCall.args.should.be.deep.equal([
+        appendFileSync.firstCall.should.have.been.calledWith(
           "/home/dir/.bashrc",
-          content,
-        ]);
-        appendFileSync.secondCall.args.should.be.deep.equal([
+          rcFileContent
+        );
+        appendFileSync.secondCall.should.have.been.calledWith(
           "/home/dir/.zshrc",
-          content,
-        ]);
+          rcFileContent
+        );
         verifyLogs(
           consoleStub,
           "Installing find-alias",
+          "Writing /home/dir/.find-alias.sh file",
+          "File written",
+          "Installing for bash",
           "Installed for bash",
-          "Please either restart the terminal or in bash shell execute: source ~/.bashrc",
-          "Then type fa to use find-alias",
+          "Installing for zsh",
           "Installed for zsh",
-          "Please either restart the terminal or in zsh shell execute: source ~/.zshrc",
-          "Then type fa to use find-alias",
           "Find-alias is installed, restart your terminal and type: fa to use it"
         );
       });
@@ -141,20 +149,24 @@ describe("install", () => {
 
         readFileSync
           .withArgs("/home/dir/.bashrc")
-          .returns(`<prefix>${content}<suffix>`);
+          .returns(`<prefix>${rcFileContent}<suffix>`);
         readFileSync
           .withArgs("/home/dir/.zshrc")
-          .returns(`<prefix>${content}<suffix>`);
+          .returns(`<prefix>${rcFileContent}<suffix>`);
 
-        FindAliasInstaller.install();
+        FindAliasInstaller.install("fa");
 
         verifyFindAliasShFileWasCopied();
-        sinon.assert.notCalled(appendFileSync);
+        appendFileSync.should.have.not.been.called;
 
         verifyLogs(
           consoleStub,
           "Installing find-alias",
+          "Writing /home/dir/.find-alias.sh file",
+          "File written",
+          "Installing for bash",
           "Already installed for bash",
+          "Installing for zsh",
           "Already installed for zsh",
           "Find-alias is installed, restart your terminal and type: fa to use it"
         );
@@ -162,9 +174,37 @@ describe("install", () => {
     });
   });
 
-  function verifyFindAliasShFileWasCopied() {
-    const args = copyFileSync.firstCall.args;
-    args[0].should.endWith("/find-alias.sh");
-    args[1].should.be.equal("/home/dir/.find-alias.sh");
+  describe("input of install will be the new command name", () => {
+    it("should copy find-alias.sh, set up .bashrc file ans skip zsh", () => {
+      existsSync.withArgs("/home/dir/.bashrc").returns(true);
+      existsSync.withArgs("/home/dir/.zshrc").returns(false);
+
+      readFileSync.withArgs("/home/dir/.bashrc").returns("");
+
+      FindAliasInstaller.install("fa2");
+
+      verifyFindAliasShFileWasCopied("fa2");
+      appendFileSync.firstCall.should.have.been.calledWith(
+        "/home/dir/.bashrc",
+        rcFileContent
+      );
+      verifyLogs(
+        consoleStub,
+        "Installing find-alias",
+        "Writing /home/dir/.find-alias.sh file",
+        "File written",
+        "Installing for bash",
+        "Installed for bash",
+        "Find-alias is installed, restart your terminal and type: fa2 to use it"
+      );
+    });
+  });
+
+  function verifyFindAliasShFileWasCopied(expectedCommandName = "fa") {
+    const args = writeFileSync.firstCall.args;
+    args[0].should.endWith("/home/dir/.find-alias.sh");
+    args[1].should.be.equal(
+      `find-alias-script ${expectedCommandName} ${expectedCommandName}`
+    );
   }
 });

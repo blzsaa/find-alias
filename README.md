@@ -8,13 +8,23 @@
 
 ## Installation
 
+### install with default name: fa
+
 1. `npm install -g find-alias`
-1. `fa`
+1. `find-alias --configure`
 1. `restart the terminal`
+1. `fa`
+
+### install with custom program name
+
+1. `npm install -g find-alias`
+1. `find-alias --configure <<custom-name>>`
+1. `restart the terminal`
+1. `<<custom-name>>`
 
 ## Features
 
-- run the program by typing `fa`
+- run the program by typing `fa` or `<<custom-name>>`
 - to find and run an alias:
   - write in any keyword in the quick filter
   - use up and down button to choose any of the aliases from the filtered list

@@ -1,29 +1,20 @@
-import yargs from "yargs";
 import FindAliasInstaller from "@/FindAliasInstaller";
 import AliasProcessor from "@/AliasProcessor";
 import PromptUI from "@/PromptUI";
-import FileWriter from "@/FileWriter";
+import OutputWriter from "@/OutputWriter";
+import FindAliasCommandInterpreter from "./FindAliasCommandInterpreter";
 
 export default class FindAlias {
   static async run() {
-    const { outputFile, install, height, aliases } = yargs(
+    const command = FindAliasCommandInterpreter.interpret(
       process.argv.slice(2)
-    )
-      .options({
-        outputFile: { type: "string" },
-        install: { type: "boolean" },
-        height: { type: "number" },
-        aliases: { type: "string" },
-      })
-      .parseSync();
-    if (install) {
-      FindAliasInstaller.install();
-    } else if (aliases !== undefined && outputFile !== undefined) {
-      const lines = AliasProcessor.processAliases(aliases);
-      const answers = await PromptUI.prompt(lines, height || 4);
-      FileWriter.writeToFile(outputFile, answers);
+    );
+    if ("configure" in command) {
+      FindAliasInstaller.install(command.configure);
     } else {
-      FindAliasInstaller.install();
+      const lines = AliasProcessor.processAliases(command.aliases);
+      const answer = await PromptUI.prompt(lines, command.pageSize);
+      OutputWriter.write(command.outputFile, answer);
     }
   }
 }
