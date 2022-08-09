@@ -19,7 +19,10 @@ describe("FindAliasInstaller", () => {
   let consoleStub: sinon.SinonStub;
 
   const rcFileContent =
-    '\n#find-alias\n[[ -s "$HOME/.find-alias.sh" ]] && source "$HOME/.find-alias.sh"\n';
+    "\n" +
+    "#find-alias\n" +
+    '[[ -s "$HOME/.find-alias.sh" ]] && command -v find-alias >/dev/null 2>&1  && source "$HOME/.find-alias.sh"\n' +
+    "\n";
 
   beforeEach(() => {
     readFileSync = sinon.stub(fs, "readFileSync");

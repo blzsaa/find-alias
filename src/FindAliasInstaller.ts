@@ -28,8 +28,10 @@ export default class FindAliasInstaller {
     console.log(`Installing for ${shell}`);
     const shellRcFile = path.join(os.homedir(), `.${shell}rc`);
     const source =
-      '\n#find-alias\n[[ -s "$HOME/.find-alias.sh" ]] && source "$HOME/.find-alias.sh"\n';
-
+      "\n" +
+      "#find-alias\n" +
+      '[[ -s "$HOME/.find-alias.sh" ]] && command -v find-alias >/dev/null 2>&1  && source "$HOME/.find-alias.sh"\n' +
+      "\n";
     const bashrcContent = fs.readFileSync(shellRcFile);
     if (!bashrcContent.includes(source)) {
       fs.appendFileSync(shellRcFile, source);
