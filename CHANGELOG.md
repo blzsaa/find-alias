@@ -1,5 +1,13 @@
 
 
+## [1.0.1](https://github.com/blzsaa/find-alias/compare/1.0.0...1.0.1) (2022-09-18)
+
+
+### Bug Fixes
+
+* add find-alias being installed as a requirement for loading find-alias.sh at shell startup time ([428ac59](https://github.com/blzsaa/find-alias/commit/428ac59453a4a13f7e4ea24590c50655530046ac))
+* **history:** ignore adding empty commands to bash and zsh history ([1dac966](https://github.com/blzsaa/find-alias/commit/1dac96650bdd86b3668fa0e37885b198f9a5cd62))
+
 # [1.0.0](https://github.com/blzsaa/find-alias/compare/0.1.0-0...1.0.0) (2022-06-20)
 
 
